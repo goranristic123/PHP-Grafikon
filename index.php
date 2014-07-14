@@ -2,7 +2,7 @@
 
 include('includes.php');
 
-echo $gtapi->GetCurrentMapImage();
+echo $gtapi->GTBigGraficonPlayer();
 
 // echo $gtapi->GetServerHostedMap();
 
