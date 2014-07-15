@@ -32,5 +32,3 @@ echo $gtapi->GetServerHostedMap();
 3) If you wanna see image of map which is currently on server, you must in index.php add:
 
 echo $gtapi->GetCurrentMapImage();
-
-Download: https://github.com/goranristic123/PHP-Grafikon
