@@ -1,5 +1,7 @@
 <?php
 
+error_reporting(0);
+
 class GTApi {
 
 	private $apilink;
@@ -51,8 +53,6 @@ class GTApi {
 	        }
 
 	        $this->logplayer = array_chunk($players_day, 2);
-
-	        error_reporting(0);
 
 	        $countval = count($this->logplayer);
 	        for($k=0; $k <= 1; $k++){
