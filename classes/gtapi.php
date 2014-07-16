@@ -48,7 +48,7 @@ class GTApi {
 	            if(substr_count($this->graphtime, '-') > 0) {
 	            	$this->graphtime = $replacetime[$this->graphtime];
 	            }
-	        }else{
+	        } else {
 	            $this->graphtime = "";
 	        }
 
@@ -96,6 +96,146 @@ class GTApi {
 		$this->plot->SetPlotAreaWorld(null, 0, null, $playersmax);
 
 		return $this->plot->DrawGraph();
+	}
+
+	public function GTSmallForBanner() {
+		
+		$players_day 	= explode(':', $this->apilink->players_day);
+		$replacetime	= array('-1' => 23, '-2' => 22, '-3' => 21, '-4' => '20', '-5' => 19, '-6' => 18, '-7' => 17, '-8' => 16, '-9' => 15, '-10' => 14, '-11' => 13, '-12' => 12, '-13' => 11, '-14' => 10);
+
+		$playersmax 		= $this->apilink->playersmax;
+		$this->plot 		= new PHPlot(169,80);
+
+		$this->plot->SetYTickIncrement(16);
+		$this->plot->SetPlotType('lines');
+
+		$this->graph = array();
+		for ($i = 24; $i >= 0; $i--){
+	        if ($i / 6 == round($i / 6)){
+	            $vreme = $i / 3;
+	            $this->graphtime = date("H") - $vreme;
+	            if(substr_count($this->graphtime, '-') > 0) {
+	            	$this->graphtime = $replacetime[$this->graphtime];
+	            }
+	        } else {
+	            $this->graphtime = "";
+	        }
+
+	        $this->logplayer = array_chunk($players_day, 2);
+
+	        $countval = count($this->logplayer);
+	        for($k=0; $k <= 1; $k++){
+	        	if($i == 24) {
+	        		$broj = isset($this->logplayer[24][0]) ? $this->logplayer[24][0] : $this->logplayer[24][0] = round(($this->logplayer[15][0] + $this->logplayer[23][1]) / 2);
+	        	} else {
+	            	$broj = round(($broj + $this->logplayer[$i][$k]) / 2);
+	        	}
+	        }
+	 
+	 
+	        $broj = $broj;
+	        
+	        if (!is_numeric($broj)){
+	            $broj=0;
+	        }
+
+	        if(!isset($broj)){
+	            $broj=0;
+	        }
+
+	        array_push($this->graph, array($this->graphtime, $broj));
+		}
+
+		$this->plot->SetDataValues($this->graph);
+		$this->plot->SetPlotBorderType("left");
+
+		$this->plot->SetXTickLength("3");
+		$this->plot->SetXTickIncrement(22);
+		$this->plot->SetPrecisionX(0);
+		$this->plot->SetYTickIncrement($playersmax / 4);
+		$this->plot->SetLightGridColor("black");
+		$this->plot->SetDrawDashedGrid("solid");
+		$this->plot->SetDrawYGrid("solid");
+		$this->plot->SetBackgroundColor("black");
+		$this->plot->SetDataColors('cyan');
+		$this->plot->SetTextColor("white");
+		$this->plot->SetGridColor("white");
+		$this->plot->SetDrawXGrid(True);
+		$this->plot->SetDrawYGrid(True);
+		$this->plot->SetPlotAreaWorld(null, 0, null, $playersmax);
+
+		return $this->plot->DrawGraph();
+	}
+
+	public function GraficonInBanner($bannercolor = null) {
+
+		if($this->apilink->apiError != 1) {
+
+			if($bannercolor != null) {
+                header('Content-Type: image/png');
+                $bg = imagecreatefrompng('graficon/sabloni/' . $bannercolor . '.png');
+	        } else {
+                header('Content-Type: image/png');
+                $bg = imagecreatefrompng('graficon/sabloni/sablonblue.png');
+	        }
+
+	        $url = $_SERVER['SERVER_NAME'];
+	        $img = imagecreatefrompng('http://' . $url . '/oop/gtapi/graficon/graph.php'); // CHANGE THIS WITH YOUR PATH, BUT MUST BE FULL PATH !!
+	         
+	        $black = imagecolorallocate($img, 255,255, 255);    
+	         
+	        imagettftext($bg, 7, 0, 98, 53, imagecolorallocate($bg,255,255,255), "graficon/fonts/slova.otf", $this->ip);
+	        imagettftext($bg, 7, 0, 201, 53, imagecolorallocate($bg,255,255,255), "graficon/fonts/slova.otf", $this->port);
+	        
+	        if($this->apilink->status == 1) {
+	       		imagettftext($bg, 7, 0, 278, 53, imagecolorallocate($bg,86,217,123), "graficon/fonts/slova.otf", "Online!");
+	        } else {
+	        	imagettftext($bg, 7, 0, 278, 53, imagecolorallocate($bg,255,0,0), "graficon/fonts/slova.otf", "Offline!");
+	        }
+
+	        imagettftext($bg, 7, 0, 98, 83, imagecolorallocate($bg,255,255,255), "graficon/fonts/slova.otf", $this->apilink->map);
+	        imagettftext($bg, 7, 0, 201, 83, imagecolorallocate($bg,255,255,255), "graficon/fonts/slova.otf", $this->apilink->players . "/" . $this->apilink->playersmax);
+	        imagettftext($bg, 7, 0, 278, 83, imagecolorallocate($bg,255,255,255), "graficon/fonts/slova.otf", $this->apilink->rank);
+	        imagettftext($bg, 7, 0, 5, 11, imagecolorallocate($bg,255,255,255), "graficon/fonts/slova.otf", $this->apilink->name);
+	        imagettftext($bg, 7, 0, 336, 11, imagecolorallocate($bg,255,255,255), "graficon/fonts/slova.otf", "Graph");
+	        imagettftext($bg, 7, 0, 336, 111, imagecolorallocate($bg,255,255,255), "graficon/fonts/slova.otf", "www.gametracker.rs");
+	         
+	        imagettftext($bg, 7, 0, 7, 111, imagecolorallocate($bg,255,255,255), "graficon/fonts/slova.otf", $this->apilink->gamename);
+
+	        imagettftext($bg, 7, 0, 5, 111, imagecolorallocate($bg,255,255,255), "slova.otf", $this->apilink->gameshort);
+
+	        $logo = imagecreatefrompng("graficon/gamelogo/" . $this->apilink->gameshort . ".png");  
+	         
+	        for ($i=0;$i<=6;$i++){
+	                imagettftext($img, 5, 90, 30+$i*20, 63, $black, "graficon/fonts/arial.ttf", "_");
+	                imagettftext($img, 5, 90, 43+$i*20, 62, $black, "graficon/fonts/arial.ttf", "-");
+	        }
+
+	        for ($i=0;$i<=4;$i++){
+	                imagettftext($img, 5, 0, 22, 59-$i*11, $black, "graficon/fonts/arial.ttf", "_");
+	        }
+	        imagecopymerge($bg, $img, 337, 20, 0, 0, 160, 77, 75);
+
+	        $marge_right = 10;
+	        $marge_bottom = 10;
+	        $sx = imagesx($logo);
+	        $sy = imagesy($logo);
+
+	        imagecopy($bg, $logo, 10, 20, 0, 0, imagesx($logo), imagesy($logo));
+	         
+	         
+	        imagepng($bg, null, 9);
+	    } else {
+	    	header("Content-type: image/png");
+
+	        $bg = imagecreatefrompng('graficon/sabloni/nepostojecibanner.png');
+
+	        imagepng($bg, null, 9);
+	        imagedestroy($bg);
+	    }
+
+	    return $bg;
+
 	}
 
 	public function GetServerHostedMap() {
