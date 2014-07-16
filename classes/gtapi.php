@@ -179,8 +179,7 @@ class GTApi {
                 $bg = imagecreatefrompng('graficon/sabloni/sablonblue.png');
 	        }
 
-	        $url = $_SERVER['SERVER_NAME'];
-	        $img = imagecreatefrompng('http://' . $url . '/oop/gtapi/graficon/graph.php'); // CHANGE THIS WITH YOUR PATH, BUT MUST BE FULL PATH !!
+	        $img = imagecreatefrompng('http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] . '/graficon/graph.php');
 	         
 	        $black = imagecolorallocate($img, 255,255, 255);    
 	         
